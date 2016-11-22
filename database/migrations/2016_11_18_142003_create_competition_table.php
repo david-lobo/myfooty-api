@@ -18,14 +18,10 @@ class CreateCompetitionTable extends Migration
 
             $table->string('title', 250);
             $table->string('title_normalised', 250);
-            $table->string('alias', 250);
-            $table->string('short', 250);
-            $table->unsignedInteger('image_id');
             $table->unsignedTinyInteger('priority')->nullable()->default(null);
-
-            $table->unique('title_normalised');
-
             $table->timestamps();
+            
+            $table->unique('title_normalised');
         });
     }
 
