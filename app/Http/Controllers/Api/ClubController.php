@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Team;
+use App\Models\Competition;
+use App\Models\Match;
 
 class ClubController extends Controller
 {
@@ -14,6 +17,17 @@ class ClubController extends Controller
      */
     public function index()
     {
+        $matches = Match::all();
+
+        foreach ($matches as $match) {
+            echo "<pre>";
+            echo $match->kickoff. ' ';
+            echo $match->homeTeam->title . ' ';
+            echo $match->awayTeam->title . ' ';
+            echo $match->competition->title . ' ';
+            echo "</pre>";
+        }
+
         $clubs = ['Arsenal', 'Burnley'];
 
         return response()->json([

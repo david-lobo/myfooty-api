@@ -18,3 +18,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 Route::get('/clubs', 'Api\ClubController@index');
+
+Route::get('/mock/fixtures', 'Mock\ApiController@fixtures');
+
+Route::get('/mock/broadcasting-schedule/fixtures', 'Mock\ApiController@broadcastingSchedule');
