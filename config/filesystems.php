@@ -54,6 +54,11 @@ return [
             'visibility' => 'public',
         ],
 
+        'nodejs' => [
+            'driver' => 'local',
+            'root' => base_path('nodejs'),
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => 'your-key',

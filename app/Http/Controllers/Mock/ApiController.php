@@ -16,7 +16,7 @@ class ApiController extends Controller
     public function fixtures(Request $request)
     {
     	if ($request->has("page") && $request->has("comps")) {
-	    	$settings = config()->get('myfooty.settings');
+	    	$settings = config()->get('scraping.settings');
 	    	$mockDir = $settings["paths"]["mock"];
 
 	    	$competitionId = $request->input("comps");
@@ -25,6 +25,9 @@ class ApiController extends Controller
 	    	$filename = "page${page}.json";
 
 	    	$filePath = $mockDir . 'pages' .DIRECTORY_SEPARATOR . $competitionId . DIRECTORY_SEPARATOR . $filename;
+	    	
+	    	//var_dump($settings);
+	    	//var_dump($filePath);
 
 	    	if (Storage::exists($filePath)) {
 	    		$json = Storage::get($filePath);
@@ -58,7 +61,7 @@ class ApiController extends Controller
     {
 
     	if ($request->has("fixtureIds")) {
-	    	$settings = config()->get('myfooty.settings');
+	    	$settings = config()->get('scraping.settings');
 	    	$mockDir = $settings["paths"]["mock"];
 
 	    	$fixtureIdsString = $request->input("fixtureIds");

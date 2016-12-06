@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFixtureDataTable extends Migration
+class CreateFixturesDataTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateFixtureDataTable extends Migration
      */
     public function up()
     {
-        Schema::create('fixture_data', function (Blueprint $table) {
+        Schema::create('fixtures_data', function (Blueprint $table) {
             $table->increments('id');
 
             $table->unsignedInteger('fixture_id')->nullable()->default(null);
@@ -35,7 +35,7 @@ class CreateFixtureDataTable extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('fixture_data');
+        Schema::dropIfExists('fixtures_data');
         Schema::enableForeignKeyConstraints();
     }
 }

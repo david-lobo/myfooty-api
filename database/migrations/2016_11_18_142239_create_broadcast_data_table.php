@@ -17,7 +17,7 @@ class CreateBroadcastDataTable extends Migration
             $table->increments('id');
 
             $table->unsignedInteger('fixture_id');
-            $table->string('title', 250)->nullable()->default(null);
+            $table->string('name', 250)->nullable()->default(null);
             $table->string('image', 250)->nullable()->default(null);
             $table->timestamps();
         });

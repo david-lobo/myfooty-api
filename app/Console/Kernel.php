@@ -14,6 +14,9 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
+        'App\Console\Commands\ImportFixturesFromFile',
+        'App\Console\Commands\UpdateFixturesModel',
+        'App\Console\Commands\ExportSettings'
     ];
 
     /**

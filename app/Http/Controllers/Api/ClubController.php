@@ -15,24 +15,26 @@ class ClubController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $matches = Match::all();
-
-        foreach ($matches as $match) {
-            echo "<pre>";
-            echo $match->kickoff. ' ';
-            echo $match->homeTeam->title . ' ';
-            echo $match->awayTeam->title . ' ';
-            echo $match->competition->title . ' ';
-            echo "</pre>";
+        $premierLeague = false;
+        $perPage = 1000;
+        if ($request->has('premier_league')) {
+            $premierLeague = $request->input('premier_league');
+            $premierLeague = ($premierLeague == 'true') ? true : false;
         }
 
-        $clubs = ['Arsenal', 'Burnley'];
-
+        if ($premierLeague) {
+            $teams = Team::where('premier_league', 1)
+                ->orderBy('title', 'asc')
+                ->simplePaginate($perPage);
+        } else {
+            $teams = Team::orderBy('title', 'asc')
+                ->simplePaginate($perPage);
+        }
         return response()->json([
-            'success' => true,
-            'data' => ['clubs' => $clubs]
+            'status' => 'success',
+            'clubs' => $teams
         ]);
     }
 
@@ -65,7 +67,20 @@ class ClubController extends Controller
      */
     public function show($id)
     {
-        //
+        $team = Team::find($id);
+
+        if ($team) {
+            return response()->json([
+                'status' => 'success',
+                'data' => ['club' => $team]
+            ]);
+        }
+
+        return $this->errorResponse(
+            404,
+            'Record not found',
+            'Team not found with that id'
+        );
     }
 
     /**

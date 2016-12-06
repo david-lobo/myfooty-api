@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('home', function () {
+    return 'Landing page goes here';
+});

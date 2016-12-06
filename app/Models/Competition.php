@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 use App\Models\Match;
 
-class Competition extends Model
+class Competition extends BaseModel
 {
 	/**
 	 * The table associated with the model.
@@ -19,8 +19,20 @@ class Competition extends Model
      *
      * @var array
      */
-    protected $fillable = ['title', 'title_normalised', 'priority'];
-    
+    protected $fillable = ['title', 'title_normalised'];
+
+    /**
+     * The attributes that should be visible in arrays.
+     *
+     * @var array
+     */
+    protected $hidden = ['created_at', 'updated_at'];
+
+    protected static $rules = [
+        'title' => 'required',
+        'title_normalised' => 'required|unique:competition,title_normalised'
+    ];
+
     /**
      * Get the comments for the blog post.
      */

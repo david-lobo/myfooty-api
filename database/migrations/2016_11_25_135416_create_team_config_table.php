@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTeamTable extends Migration
+class CreateTeamConfigTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,16 @@ class CreateTeamTable extends Migration
      */
     public function up()
     {
-        Schema::create('team', function (Blueprint $table) {
+        Schema::create('team_config', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->string('title', 250);
-            $table->string('image', 250)->nullable();
-            $table->unsignedTinyInteger('premier_league')->default(0);
-            $table->string('background_color', 7)->nullable();
-            $table->string('text_color', 7)->nullable();
-
             $table->string('title_normalised', 250);
+            $table->string('image', 250)->nullable();
+            $table->string('background_color', 7);
+            $table->string('text_color', 7);
+            $table->unsignedTinyInteger('premier_league')->default(0);
 
-            $table->unique('title');
             $table->unique('title_normalised');
-
             $table->timestamps();
         });
     }
@@ -38,9 +34,6 @@ class CreateTeamTable extends Migration
      */
     public function down()
     {
-
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('team');
-        Schema::enableForeignKeyConstraints();
+        Schema::dropIfExists('team_config');
     }
 }

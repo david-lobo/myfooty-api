@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class FixtureData extends Model
+class FixturesData extends Model
 {
     //
 }
