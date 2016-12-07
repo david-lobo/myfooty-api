@@ -67,7 +67,7 @@ class ModelUpdater
         // FIXTURES - CREATING DB ENTRIES
         //======================================================================
         foreach ($fixtures as $fixture) {
-            if ($i >= 0) {
+            if ($i >= 1000000) {
                 continue;
             }
 
@@ -349,11 +349,11 @@ class ModelUpdater
     protected function clearModel()
     {
         $tablesToClear = [
-            /*'broadcaster',
+            'broadcaster',
             'competition',
             'match',
             'match_broadcaster',
-            'team'*/
+            'team'
         ];
 
         foreach ($tablesToClear as $tableName) {
