@@ -118,7 +118,10 @@ class FileImporter
 
         $files = Storage::files($broadcastsPath);
 
-        foreach ($files as $file) {
+        // filter the ones that are .json
+        $filteredFiles = preg_grep('/\.json$/', $files);
+
+        foreach ($filteredFiles as $file) {
             $this->importBroadcastsFile($file);
             $this->archiveFile($file);
         }
@@ -194,13 +197,16 @@ class FileImporter
      */
     protected function importCompetition($competitionId)
     {
-        Log::info("importCompetition " + $competitionId);
+        Log::info("importCompetition ", [$competitionId]);
 
         $competitionPath = $this->fixturesPath . DIRECTORY_SEPARATOR . $competitionId;
 
         $files = Storage::files($competitionPath);
 
-        foreach ($files as $file) {
+        // filter the ones that are .json
+        $filteredFiles = preg_grep('/\.json$/', $files);
+
+        foreach ($filteredFiles as $file) {
             $this->importCompetitionFile($file);
             $this->archiveFile($file);
         }
@@ -214,7 +220,7 @@ class FileImporter
      */
     protected function importCompetitionFile($file)
     {
-        Log::info("importCompetitionFile " + $file);
+        Log::info("importCompetitionFile ", [$file]);
 
         $contents = Storage::get($file);
 
