@@ -7,6 +7,10 @@ $localDir = $dataDir . "local" . DIRECTORY_SEPARATOR;
 $liveDir = $dataDir . "live" . DIRECTORY_SEPARATOR;
 
 $fixturesPath = 'pending' . DIRECTORY_SEPARATOR .'fixtures' . DIRECTORY_SEPARATOR;
+
+$url = config('app.url');
+$domain = str_replace("http://", "", $url);
+
 $competitions = [
     [
         "id" => 1,
@@ -38,9 +42,9 @@ return [
 			"mock" => $mockDataDir
 		],
 		"urls" => [
-	    	"home" => "http://api.myfooty.local/api/mock/broadcasting-schedule/fixtures",
-	      	"fixtures" => "http://api.myfooty.local/api/mock/fixtures",
-	      	"schedule" => "http://api.myfooty.local/api/mock/broadcasting-schedule/fixtures"
+	    	"home" => "http://api.{$domain}/api/mock/broadcasting-schedule/fixtures",
+	      	"fixtures" => "http://api.{$domain}/api/mock/fixtures",
+	      	"schedule" => "http://api.{$domain}/api/mock/broadcasting-schedule/fixtures"
 	     ],
 		"competitions" => $competitions
 	],
