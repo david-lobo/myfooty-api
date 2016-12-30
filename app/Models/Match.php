@@ -35,7 +35,7 @@ class Match extends BaseModel
      *
      * @var array
      */
-    protected $appends = ['broadcasters_flat'];
+    protected $appends = ['broadcasters_flat', 'kickoff_date', 'kickoff_time'];
 
     protected static $rules = [
         'home_id' => 'required|exists:team,id',
@@ -72,14 +72,35 @@ class Match extends BaseModel
         return $this->belongsToMany(Broadcaster::class, 'match_broadcaster', 'match_id', 'broadcaster_id')->withTimestamps();;
     }
 
-        /**
-     * Get the administrator flag for the user.
+    /**
+     * Get the flattened broadasters
      *
      * @return bool
      */
     public function getBroadcastersFlatAttribute()
     {
         return $this->broadcasters->implode('title', ', ');
-        //return $this->attributes['admin'] == 'yes';
+    }
+
+    /**
+     * Get the kickoff date
+     *
+     * @return string
+     */
+    public function getKickoffDateAttribute()
+    {
+        $kickoff = new \DateTime($this->kickoff);
+        return $kickoff->format('D jS M');
+    }
+
+    /**
+     * Get the kickoff time
+     *
+     * @return string
+     */
+    public function getKickoffTimeAttribute()
+    {
+        $kickoff = new \DateTime($this->kickoff);
+        return $kickoff->format('H:i');
     }
 }

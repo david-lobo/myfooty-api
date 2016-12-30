@@ -18,6 +18,8 @@ $domain = str_replace("http://", "", $url);
 
 Route::group(['domain' => "api.{$domain}"], function () {
 
+    Route::get('/config/{env}', 'Api\ConfigController');
+
     Route::get('/mock/fixtures', 'Mock\ApiController@fixtures');
     Route::get('/mock/broadcasting-schedule/fixtures', 'Mock\ApiController@broadcastingSchedule');
 

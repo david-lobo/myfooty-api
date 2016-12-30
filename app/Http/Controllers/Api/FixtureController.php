@@ -64,16 +64,23 @@ class FixtureController extends Controller
         $page = $request->input('page', 1);
         $offset = ($page - 1) * $perPage;
 
+        if (is_null($page) || $page <= 0) {
+            return $this->errorResponse(
+                404,
+                'Page not valid',
+                'Please give a valid page'
+            );
+        }
+
         //$cacheTag = "fixtures_all_{$page}_{$offset}_{$perPage}";
 
         // Get lsit of matchday/competition dates
-        $matchDays = Match::select(DB::raw('date(kickoff) as kickoff_date'))
-            ->addSelect(DB::raw('date(kickoff) as kickoff_date'))
+        $matchDays = Match::select(DB::raw('date(kickoff) as kickoff_date_iso'))
             ->addSelect('competition.title as competition_title')
             ->addSelect('competition.id as competition_id')
             ->leftJoin('competition', 'match.competition_id', '=', 'competition.id')
-            ->groupBy(DB::raw('kickoff_date'), 'match.competition_id')
-            ->orderBy('kickoff_date', 'asc')
+            ->groupBy(DB::raw('kickoff_date_iso'), 'match.competition_id')
+            ->orderBy('kickoff_date_iso', 'asc')
             ->get();
 
         // Slice the array for pagination
@@ -88,8 +95,9 @@ class FixtureController extends Controller
                 continue;
             }
             $count++;
+
             $matchDayFixtures = collect([
-                'kickoff_date' => $matchDay->kickoff_date,
+                'kickoff_date' => $matchDay->kickoff_date_iso,
                 'competition_id' => $matchDay->competition_id,
                 'competition_title' => $matchDay->competition_title
             ]);
@@ -97,13 +105,13 @@ class FixtureController extends Controller
             // Get the actual fixtures for a matchday/competition
             $matches = Match::where('competition_id', '=', $matchDay->competition_id)
             ->with('homeTeam', 'awayTeam', 'broadcasters', 'competition')
-            ->where(DB::raw('date(kickoff)'), '=', $matchDay->kickoff_date)
+            ->where(DB::raw('date(kickoff)'), '=', $matchDay->kickoff_date_iso)
             ->orderBy('kickoff', 'asc')
             ->get();
 
             // add the matches data to the match day object
-            $matchDayFixtures->put('match_total', $matches->count());
-            $matchDayFixtures->put('matches', $matches);
+            $matchDayFixtures->put('fixtures_total', $matches->count());
+            $matchDayFixtures->put('fixtures', $matches);
 
             $allFixtures[] = $matchDayFixtures;
         };
@@ -121,20 +129,41 @@ class FixtureController extends Controller
             $paginatorOptions
         );
 
+        // Convert to array to add additional values
+        $data = $paginator->toArray();
+        $nextPage = null;
+
+        if (isset($data['next_page_url'])  && !empty($data['next_page_url'])) {
+
+            $nextPageUrl = $data['next_page_url'];
+            $nextPageQueryParams = parse_url($nextPageUrl);
+
+            if ($nextPageQueryParams && isset($nextPageQueryParams["query"])) {
+                $nextPageQuery = $nextPageQueryParams["query"];
+                parse_str($nextPageQuery, $output);
+                $nextPage = $output['page'];
+            }
+
+            $data['next_page'] = $nextPage;
+        }
+
         return response()->json([
             'status' => 'success',
-            'data' => ['fixtures' => $paginator]
+            'data' => $data
         ]);
     }
 
     public function fixturesForTeam(Request $request)
     {
+        //sleep(5);
+        //sleep(5);
         $teamAlias = null;
         $perPage = 10;
         $allowedQueryParams = ['club'];
 
         $params = $request->all();
         $teamAlias = $request->input('club');
+        $page = intval($request->input('page'));
 
         $team = Team::where('title_normalised', $teamAlias)->first();
 
@@ -143,6 +172,14 @@ class FixtureController extends Controller
                 404,
                 'Record not found',
                 'Team not found with that id'
+            );
+        }
+
+        if (is_null($page) || $page <= 0) {
+            return $this->errorResponse(
+                404,
+                'Page not valid',
+                'Please give a valid page'
             );
         }
 
@@ -157,9 +194,25 @@ class FixtureController extends Controller
         $params = array_intersect_key($params, array_flip($allowedQueryParams));
         $matches->appends($params);
 
+        // Convert to array to add additional values
+        $data = $matches->toArray();
+        $data['next_page'] = null;
+
+        if (isset($data['next_page_url'])  && !empty($data['next_page_url'])) {
+            $nextPageUrl = $data['next_page_url'];
+            $nextPageQueryParams = parse_url($nextPageUrl);
+
+            if ($nextPageQueryParams && isset($nextPageQueryParams["query"])) {
+                $nextPageQuery = $nextPageQueryParams["query"];
+                parse_str($nextPageQuery, $output);
+                $nextPage = $output['page'];
+            }
+            $data['next_page'] = $nextPage;
+        }
+
         return response()->json([
             'status' => 'success',
-            'fixtures' => $matches
+            'data' => $data
         ]);
     }
 
