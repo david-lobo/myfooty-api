@@ -67,7 +67,7 @@ class Handler extends ExceptionHandler
             ];
 
             // If the app is in debug mode
-            if (1==2 && config('app.debug'))
+            if (config('app.debug'))
             {
                 // Add the exception class name, message and stack trace to response
                 $response['exception'] = get_class($e); // Reflection might be better here
