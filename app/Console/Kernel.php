@@ -16,7 +16,8 @@ class Kernel extends ConsoleKernel
         //
         'App\Console\Commands\ImportFixturesFromFile',
         'App\Console\Commands\UpdateFixturesModel',
-        'App\Console\Commands\ExportSettings'
+        'App\Console\Commands\ExportSettings',
+        'App\Console\Commands\SetupTeamConfig'
     ];
 
     /**

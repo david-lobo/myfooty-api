@@ -16,10 +16,11 @@ class CreateTeamConfigTable extends Migration
         Schema::create('team_config', function (Blueprint $table) {
             $table->increments('id');
 
+            $table->string('title', 250);
             $table->string('title_normalised', 250);
             $table->string('image', 250)->nullable();
-            $table->string('background_color', 7);
-            $table->string('text_color', 7);
+            $table->string('background_color', 7)->nullable();
+            $table->string('text_color', 7)->nullable();
             $table->unsignedTinyInteger('premier_league')->default(0);
 
             $table->unique('title_normalised');

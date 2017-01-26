@@ -27,6 +27,15 @@ Route::group(['domain' => "api.{$domain}"], function () {
         Route::get('/clubs', 'Api\ClubController@index');
         Route::get('/clubs/{id}', 'Api\ClubController@show');
         Route::get('/fixtures', 'Api\FixtureController@index');
+
+        // Auth routes
+        Route::resource('authenticate', 'AuthenticateController', ['only' => ['index']]);
+        //Route::post('authenticate/login', 'AuthenticateController@login');
+        //Route::post('authenticate/register', 'AuthenticateController@register');
+        Route::get('authenticate/user', 'AuthenticateController@getAuthenticatedUser');
+        Route::post('authenticate/register-device', 'AuthenticateController@registerDevice');
+        Route::resource('users', 'Api\UserController');
+
     });
 });
 

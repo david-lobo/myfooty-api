@@ -33,20 +33,13 @@ class ModelUpdater
     ];
 
     /**
-     * Static data about premier league teams
-     *
-     * @var array
-     */
-    public $premierLeagueTeams;
-
-    /**
     * Create a new ModelUpdater instance.
     *
     * @return void
     */
     public function __construct()
     {
-        $this->premierLeagueTeams = config()->get('scraping.premier_league_teams');
+        //
     }
 
     /**
@@ -397,9 +390,11 @@ class ModelUpdater
      */
     protected function getPremierLeagueTeam($alias)
     {
-        if (isset($this->premierLeagueTeams[$alias])) {
-            return $this->premierLeagueTeams[$alias];
+        $team = \App\Models\TeamConfig::where('title_normalised', $alias)->first();
+        if ($team) {
+            return $team->toArray();
         }
+
         return [];
     }
 }
