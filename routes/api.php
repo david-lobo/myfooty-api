@@ -28,6 +28,10 @@ Route::group(['domain' => "api.{$domain}"], function () {
         Route::get('/clubs/{id}', 'Api\ClubController@show');
         Route::get('/fixtures', 'Api\FixtureController@index');
 
+        Route::get('/fixturesdata', 'Api\FixtureController@data');
+
+        Route::get('/fixturestestdata', 'Api\FixtureController@testdata');
+
         // Auth routes
         Route::resource('authenticate', 'AuthenticateController', ['only' => ['index']]);
         //Route::post('authenticate/login', 'AuthenticateController@login');

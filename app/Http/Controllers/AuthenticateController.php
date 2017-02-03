@@ -107,7 +107,7 @@ class AuthenticateController extends Controller
         return response()->json([
             'data' => [
                 'access_token' => $token,
-                'user_id' => $user->id
+                'user' => $user,
             ]
         ]);
     }

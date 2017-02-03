@@ -31,6 +31,27 @@ class FixtureController extends Controller
         }
     }
 
+        /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function data(Request $request)
+    {
+        return $this->fixturesDataForAllTeams($request);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function testdata(Request $request)
+    {
+        //sleep(5);
+        return $this->fixturesTestDataForAllTeams($request);
+    }
+
     /**
      * Display the specified resource.
      *
@@ -60,7 +81,7 @@ class FixtureController extends Controller
 
     public function fixturesForAllTeams(Request $request)
     {
-        $perPage = 10;
+        $perPage = 1000;
         $page = $request->input('page', 1);
         $offset = ($page - 1) * $perPage;
 
@@ -158,7 +179,7 @@ class FixtureController extends Controller
         //sleep(5);
         //sleep(5);
         $teamAlias = null;
-        $perPage = 10;
+        $perPage = 1000;
         $allowedQueryParams = ['club'];
 
         $params = $request->all();
@@ -209,6 +230,110 @@ class FixtureController extends Controller
             }
             $data['next_page'] = $nextPage;
         }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data
+        ]);
+    }
+
+    public function fixturesDataForAllTeams(Request $request)
+    {
+        //sleep(5);
+        //sleep(5);
+        $perPage = 1000;
+        $allowedQueryParams = ['club'];
+
+        $params = $request->all();
+        $page = intval($request->input('page'));
+
+        if (is_null($page) || $page <= 0) {
+            return $this->errorResponse(
+                404,
+                'Page not valid',
+                'Please give a valid page'
+            );
+        }
+
+        $matches = Match::where('id', '>', '1')
+            ->with('homeTeam', 'awayTeam', 'broadcasters', 'competition')
+            //->orWhere('away_id', '=', $team->id)
+            ->orderBy('kickoff', 'asc')
+            ->simplePaginate($perPage);
+
+        $path = http_build_query($params);
+
+        $params = array_intersect_key($params, array_flip($allowedQueryParams));
+        $matches->appends($params);
+
+        // Convert to array to add additional values
+        $data = $matches->toArray();
+        $data['next_page'] = null;
+
+        if (isset($data['next_page_url'])  && !empty($data['next_page_url'])) {
+            $nextPageUrl = $data['next_page_url'];
+            $nextPageQueryParams = parse_url($nextPageUrl);
+
+            if ($nextPageQueryParams && isset($nextPageQueryParams["query"])) {
+                $nextPageQuery = $nextPageQueryParams["query"];
+                parse_str($nextPageQuery, $output);
+                $nextPage = $output['page'];
+            }
+            $data['next_page'] = $nextPage;
+        }
+
+        $lastUpdated = new \DateTime;
+        $data['data_last_updated'] = $lastUpdated->format('Y-m-d H:i:s');
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data
+        ]);
+    }
+
+    public function fixturesTestDataForAllTeams(Request $request)
+    {
+        $testHomeTeams = ['Hull', 'Chelsea', 'Wolves', 'Watford'];
+        $testAwayTeams = ['Spurs', 'Arsenal', 'Liverpool', 'Swansea'];
+
+        shuffle($testHomeTeams);
+        shuffle($testAwayTeams);
+
+        $kickoffDate = new \DateTime();
+        $data = [
+            'data' => [[
+                "id" => 991919,
+                "home_id" => 21,
+                "away_id" => 22,
+                "kickoff" => $kickoffDate->format('Y-m-d H:i:s'),
+                "competition_id" => 2,
+                "broadcasters_flat" => "",
+                "kickoff_date" => "Wed 7th Dec",
+                "kickoff_time" => "19:45",
+                "home_team" => [
+                    "id" => 21,
+                    "title" => $testHomeTeams[0],
+                    "image" => null,
+                    "premier_league" => 0,
+                    "background_color" => null,
+                    "text_color" => null,
+                    "title_normalised" => $testHomeTeams[0]
+                ],
+
+                "away_team" => [
+                    "id" => 22,
+                    "title" => $testAwayTeams[0],
+                    "image" => null,
+                    "premier_league" => 0,
+                    "background_color" => null,
+                    "text_color" => null,
+                    "title_normalised" => $testAwayTeams[0]
+                ]
+            ]]
+        ];
+
+        $lastUpdated = new \DateTime;
+        $data['data_last_updated'] = $lastUpdated->format('Y-m-d H:i:s');
 
         return response()->json([
             'status' => 'success',
