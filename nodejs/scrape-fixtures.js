@@ -47,9 +47,10 @@ var waitingIntervals = [31200, 4060, 5420, 6180, 7900, 870, 9300, 10300, 32450, 
 
 //Not sure why - maybe cached on Wednesday's??
 var startDateForFixtures = '2016-10-05';
-var path = './nodejs/config/settings.json';
+var path = './config/settings.json';
 
 var settings = fs.read(path);
+
 settings = JSON.parse(settings);
 
 var scrapeLiveUrls = settings.scrape_live_urls;

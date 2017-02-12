@@ -30,7 +30,10 @@ Route::group(['domain' => "api.{$domain}"], function () {
 
         Route::get('/fixturesdata', 'Api\FixtureController@data');
 
+        Route::get('/data/fixtures', 'Api\DataController@fixtures');
+
         Route::get('/fixturestestdata', 'Api\FixtureController@testdata');
+
 
         // Auth routes
         Route::resource('authenticate', 'AuthenticateController', ['only' => ['index']]);
