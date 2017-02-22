@@ -30,7 +30,7 @@ Route::group(['domain' => "api.{$domain}"], function () {
 
         Route::get('/fixturesdata', 'Api\FixtureController@data');
 
-        Route::get('/data/fixtures', 'Api\DataController@fixtures');
+        Route::get('/data/export', 'Api\DataController@export');
 
         Route::get('/fixturestestdata', 'Api\FixtureController@testdata');
 

@@ -211,6 +211,7 @@ class ModelUpdater
         }
 
         $this->logRecordsAddedCount();
+        $this->incrementApiVersions();
     }
 
     /**
@@ -396,5 +397,21 @@ class ModelUpdater
         }
 
         return [];
+    }
+
+    /**
+     * Increase the api version id
+     * @return void
+     */
+    protected function incrementApiVersions()
+    {
+        $results = DB::select('select * from api_versions limit 1');
+        //var_dump($results);
+        if (empty($results)) {
+            DB::insert('insert into api_versions (id, created_at, updated_at) values (?, NOW(), NOW())', [1]);
+        } else {
+            $affected = DB::update('update api_versions set id = id+1');
+            //var_dump($affected);
+        }
     }
 }

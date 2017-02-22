@@ -14,9 +14,39 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class DataController extends Controller
 {
-    public function fixtures(Request $request)
+    public function export(Request $request)
     {
         //sleep(3);
+        //
+        $version = $request->input('version');
+        $apiVersionKey = 'api_version';
+        $apiUpdateAvailableKey = 'update_available';
+        $apiDataKey = 'api_data';
+
+        $response = [
+            'status' => 'success',
+            'data' => [
+                'update_available' => true,
+            ]
+        ];
+
+        // Update the version to the latest from db
+        $results = DB::select('select * from api_versions limit 1');
+        $dataVersion = "";
+        if (!empty($results)) {
+            $id = $results[0]->id;
+            $dataVersion = "v{$id}";
+        }
+
+        if ($version === $dataVersion) {
+
+            //There is no new data to send
+            $response['data'][$apiUpdateAvailableKey] = false;
+            $response['data'][$apiVersionKey] = $dataVersion;
+            return response()->json($response);
+
+        }
+
         $matches = Match::where('id', '>', '1')
             ->with('homeTeam', 'awayTeam', 'broadcasters', 'competition')
             //->orWhere('away_id', '=', $team->id)
@@ -28,14 +58,15 @@ class DataController extends Controller
         //$lastUpdated = new \DateTime;
         //$data['data_last_updated'] = $lastUpdated->format('Y-m-d H:i:s');
         $teams = Team::orderBy('title', 'asc')->get();
+        $content = ['fixtures' => $matches, 'teams' => $teams];
 
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'fixtures' => $matches,
-                'teams' => $teams
-            ]
-        ]);
+        $response['data'][$apiUpdateAvailableKey] = true;
+        $response['data'][$apiVersionKey] = $dataVersion;
+        //$response['data']['fixtures'] = $matches;
+        //$response['data']['teams'] = $teams;
+        $response['data'][$apiDataKey] = $content;
+
+        return response()->json($response);
     }
 
     public function fixturesTestDataForAllTeams(Request $request)

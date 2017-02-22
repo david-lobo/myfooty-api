@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Library\MyFooty\Scraping\Fixtures\ModelUpdater;
+use Illuminate\Support\Facades\DB;
 
 class UpdateFixturesModel extends Command
 {
