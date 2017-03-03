@@ -180,7 +180,7 @@ class SendPushNotifications extends Command
     protected function findMatchesForDate(Carbon $date)
     {
         $matches = Match::select()
-            ->with('competitions', 'homeTeam')
+            ->with('competition', 'homeTeam')
             ->whereDate('kickoff', '=', $date->toDateString())
             ->take(10)
             ->get();
