@@ -82,7 +82,7 @@ class SendPushNotifications extends Command
         //DB::connection()->enableQueryLog();
 
         // send to apns server or just db for debug
-        $this->sendMode = MessageSender::SEND_MODE_DB;
+        $this->sendMode = MessageSender::SEND_MODE_APNS;
 
         // set the config here - can be dev or prod
         $this->pushApp = PushNotification::app('appNameIOS');
