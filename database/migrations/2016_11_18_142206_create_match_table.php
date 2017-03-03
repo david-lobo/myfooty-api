@@ -22,8 +22,8 @@ class CreateMatchTable extends Migration
             $table->unsignedInteger('competition_id');
 
             $table->unique(['home_id', 'away_id', 'kickoff']);
-            
-           $table->foreign('away_id')
+
+            $table->foreign('away_id')
                   ->references('id')->on('team')
                   ->onDelete('cascade');
 

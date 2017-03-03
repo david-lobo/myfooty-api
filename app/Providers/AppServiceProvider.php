@@ -17,9 +17,10 @@ class AppServiceProvider extends ServiceProvider
     {
 
         /*DB::listen(function ($query) {
+            Log::useFiles('php://stderr');
             Log::info($query->sql);
             Log::info($query->bindings);
-            Log::info($query->time);
+            //Log::info($query->time);
         });*/
     }
 
