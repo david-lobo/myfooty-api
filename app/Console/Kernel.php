@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -18,7 +19,8 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\UpdateFixturesModel',
         'App\Console\Commands\ExportSettings',
         'App\Console\Commands\SetupTeamConfig',
-        'App\Console\Commands\SendPushNotifications'
+        'App\Console\Commands\SendDailyReminderNotifications',
+        'App\Console\Commands\SendKickoffReminderNotifications',
     ];
 
     /**
@@ -31,6 +33,15 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        /*$schedule->exec('cd ~/Code/myfooty-api && ls')
+            ->everyMinute()
+            ->sendOutputTo('/home/vagrant/Code/myfooty-api/listing.txt');*/
+
+        /*$schedule->call(function () {
+            Log::info("scheduler is running");
+        })->everyFiveMinutes()->between('11:00', '22:00');;*/
+
+
     }
 
     /**

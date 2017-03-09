@@ -1,14 +1,14 @@
 <?php
 
-namespace Library\MyFooty\Notifications;
+namespace Library\MyFooty\PushNotifications\MessageSender;
 
-use Illuminate\Support\Facades\Log;
 use \Illuminate\Support\Collection as Collection;
 use App\Models\NotificationLog;
 use Davibennun\LaravelPushNotification\Facades\PushNotification;
 use \Davibennun\LaravelPushNotification\App as PushApp;
 use \Sly\NotificationPusher\Model\Message;
-use Library\MyFooty\Notifications\MessageSender;
+use Library\MyFooty\PushNotifications\MessageSender\MessageSender;
+use CustomLog as CLog;
 
 class BatchMessageSender extends MessageSender
 {
@@ -32,7 +32,7 @@ class BatchMessageSender extends MessageSender
      */
     public function send(Message $message, Collection $users)
     {
-        Log::info("BatchMessageSender",[
+        CLog::info("BatchMessageSender",[
             'users_count' => $users->count(),
             'user_ids' => $users->implode('id', ','),
             'message_title' => $message->getOption('title'),
@@ -54,7 +54,7 @@ class BatchMessageSender extends MessageSender
                 $log = $this->createMatchNotificationLog($device, $message, $user);
             } catch(\Exception $iae) {
                 $error = $iae->getMessage();
-                Log::error("Can't create match notification log - {$error}", [
+                CLog::error("Can't create match notification log - {$error}", [
                     'user_id' => $user->id,
                     'message_title' => $message->getOption('title'),
                     'device_token' => $device->getToken()
@@ -67,7 +67,7 @@ class BatchMessageSender extends MessageSender
         });
 
         $sendingTo = $pushToDevices ? 'devices' : 'db';
-        Log::info("Attempting send to {$sendingTo}",[
+        CLog::info("Attempting send to {$sendingTo}",[
             'devices_count' => $devices->count(),
             'logs_count' => $logs->count(),
             'message_title' => $message->getOption('title'),
@@ -82,7 +82,7 @@ class BatchMessageSender extends MessageSender
             // get response for each device push
             foreach ($collection->pushManager as $push) {
                 $response = $push->getAdapter()->getResponse();
-                Log::info('Apns response', [
+                CLog::info('Apns response', [
                     'id' => $response->getId(),
                     'code' => $response->getCode()
                 ]);
@@ -91,7 +91,7 @@ class BatchMessageSender extends MessageSender
 
         // Save the log after sending apns
         $logs->each(function ($log, $key) {
-            if ($log instanceof NotificationLog) {
+            if ($log instanceof NotificationCLog) {
                 $log->save();
             }
         });

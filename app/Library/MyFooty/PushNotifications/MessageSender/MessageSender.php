@@ -1,10 +1,9 @@
 <?php
 
-namespace Library\MyFooty\Notifications;
+namespace Library\MyFooty\PushNotifications\MessageSender;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use \Illuminate\Support\Collection as Collection;
 use App\User;
@@ -19,8 +18,8 @@ use Davibennun\LaravelPushNotification\Facades\PushNotification;
 use \Davibennun\LaravelPushNotification\App as PushApp;
 use \Sly\NotificationPusher\Model\Device;
 use \Sly\NotificationPusher\Model\Message;
-
 use ZendService\Apple\Apns\Message as ZendMessage;
+use CustomLog as CLog;
 
 class MessageSender
 {

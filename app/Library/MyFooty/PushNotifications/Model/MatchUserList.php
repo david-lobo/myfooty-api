@@ -1,6 +1,6 @@
 <?php
 
-namespace Library\MyFooty\Notifications\Model;
+namespace Library\MyFooty\PushNotifications\Model;
 
 use \Illuminate\Support\Collection as Collection;
 use App\Models\Match;

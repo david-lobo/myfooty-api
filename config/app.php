@@ -163,6 +163,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
+
         /*
          * Package Service Providers...
          */
@@ -179,7 +180,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        App\Library\MyFooty\CustomLog\Providers\CustomLogServiceProvider::class,
     ],
 
     /*
@@ -230,6 +231,7 @@ return [
         'JWTAuth'   => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'PushNotification' => Davibennun\LaravelPushNotification\Facades\PushNotification::class,
+        'CustomLog' => App\Library\MyFooty\CustomLog\Facades\CustomLog::class,
     ],
 
 ];

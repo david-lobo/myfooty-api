@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Library\MyFooty\PushNotifications\NotificationSender;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\App;
 use \Illuminate\Support\Collection as Collection;
 use App\User;
 use App\Models\Team;
@@ -19,32 +19,26 @@ use Davibennun\LaravelPushNotification\Facades\PushNotification;
 use \Sly\NotificationPusher\Model\Device;
 use \Sly\NotificationPusher\Model\Message;
 use ZendService\Apple\Apns\Message as ZendMessage;
-use Library\MyFooty\Notifications\MessageSender;
-use Library\MyFooty\Notifications\BatchMessageSender;
-use Library\MyFooty\Notifications\Model\MatchUserList;
+use Library\MyFooty\PushNotifications\MessageSender\MessageSender;
+use Library\MyFooty\PushNotifications\MessageSender\BatchMessageSender;
+use Library\MyFooty\PushNotifications\Model\MatchUserList;
+use CustomLog as CLog;
 
-class SendPushNotifications extends Command
+abstract class MatchNotificationSender
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'fixtures:send-apns';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Send APN notifications';
-
     /**
      * The name and signature of the console command.
      *
      * @var \Davibennun\LaravelPushNotification\App
      */
     protected $pushApp;
+
+    /**
+     * Collection of matches
+     *
+     * @var \Illuminate\Support\Collection
+     */
+    protected $matchUsersLists;
 
     /**
      * Carbon date
@@ -61,58 +55,55 @@ class SendPushNotifications extends Command
     protected $sendMode = MessageSender::SEND_MODE_APNS;
 
     /**
-     * Create a new SendPushNotifications command instance.
+     * Create a new DailyNotificationSender instance.
      *
      * @return void
      */
     public function __construct()
     {
-        parent::__construct();
+        $this->dateNow = Carbon::now();
     }
 
     /**
-     * Execute the console command.
+     * Set the dateNow property
      *
-     * @return mixed
+     * @param  \Carbon\Carbon $dateNow
+     * @return void
      */
-    public function handle()
+    public function setDateNow(Carbon $dateNow)
     {
-        Log::useFiles('php://stderr');
-        Log::info('SendPushNotifications running');
-        //DB::connection()->enableQueryLog();
+        $this->dateNow = $dateNow;
+    }
+
+    /**
+     * Iterate matches and sends to list of users
+     *
+     * @return void
+     */
+    public function send()
+    {
+        CLog::info("{$this->getClassName()}");
 
         // send to apns server or just db for debug
-        $this->sendMode = MessageSender::SEND_MODE_APNS;
+        $this->sendMode = MessageSender::SEND_MODE_DB;
 
         // set the config here - can be dev or prod
         $this->pushApp = PushNotification::app('appNameIOS');
 
-        // date used for queries
-        $this->dateNow = Carbon::now();
+        $this->matchUsersLists = $this->getMatchUserListsForDate($this->dateNow);
 
-        //Remove from prod - testing time
-        $this->dateNow->day = 4;
-        $this->dateNow->month = 3;
+        $dateNowString = $this->getQueryDateAsString();
 
-        $this->dateNow->hour = 10;
-        $this->dateNow->minute = 0;
-        $this->dateNow->second = 0;
-
-        $matchUsersLists = $this->getMatchUserListsForDate($this->dateNow);
-
-        if ($matchUsersLists->count() == 0) {
-            Log::info("No matches found for today {$this->dateNow->toDateString()}");
+        if ($this->matchUsersLists->count() == 0) {
+            CLog::info("No matches found for today {$dateNowString}");
             return;
         }
 
-        $matchCount = $matchUsersLists->count();
-        $dateNowString = $this->dateNow->toDateString();
-        Log::info("Found {$matchCount} matches for today {$dateNowString}");
+        $matchCount = $this->matchUsersLists->count();
 
-        $this->sendMatchMessages($matchUsersLists);
+        CLog::info("Found {$matchCount} matches for today {$dateNowString}");
 
-        //$queries = DB::getQueryLog();
-        //var_dump($queries);
+        $this->sendMatchMessages();
     }
 
     /**
@@ -121,18 +112,21 @@ class SendPushNotifications extends Command
      * @param  \Illuminate\Support\Collection $matchUserLists
      * @return void
      */
-    protected function sendMatchMessages(Collection $matchUsersLists)
+    protected function sendMatchMessages()
     {
-        $collection = $matchUsersLists->each(function ($matchUserList, $key) {
+        $collection = $this->matchUsersLists->each(function ($matchUserList, $key) {
 
             $match = $matchUserList->getMatch();
             $users = $matchUserList->getUsers();
 
+            $versus = "{$match->homeTeam->title} v {$match->awayTeam->title}";
+
             if ($users->isEmpty()) {
-                $versus = "{$match->homeTeam->title} v {$match->awayTeam->title}";
-                Log::info("No users for {$versus}");
+                CLog::info("0 users for {$versus}");
                 return;
             }
+
+            CLog::info("{$users->count()} users for {$versus}");
 
             $message = $this->createPushMessageForMatch($match);
             $sender = new BatchMessageSender($this->pushApp);
@@ -156,8 +150,11 @@ class SendPushNotifications extends Command
         $matchUsers = collect([]);
         $matches = $this->findMatchesForDate($date);
 
+        //$queries = DB::getQueryLog();
+        //var_dump($queries);
+
         foreach ($matches as $match) {
-            $this->info("===================");
+            //Log::info("===================");
             $users = $this->findUsersForMatch($match);
             /*$matchMessage = [
                 'match' => $match,
@@ -179,15 +176,14 @@ class SendPushNotifications extends Command
      */
     protected function findMatchesForDate(Carbon $date)
     {
-        $matches = Match::select()
-            ->with('competition', 'homeTeam')
-            ->whereDate('kickoff', '=', $date->toDateString())
-            ->take(10)
-            ->get();
+        $matchQuery = $this->getMatchQuery();
+        $matches = $matchQuery->get();
 
-            if ($matches->count() == 0) {
-                return collect([]);
-            }
+        if ($matches->count() == 0) {
+            return collect([]);
+        }
+
+
         return $matches;
     }
 
@@ -205,7 +201,7 @@ class SendPushNotifications extends Command
         ->where(function ($query) use ($match) {
             $query->orWhere('team_alias', $match->homeTeam->title_normalised);
             $query->orWhere('team_alias', $match->awayTeam->title_normalised);
-            })
+        })
         ->get();
 
         return $users;
@@ -238,10 +234,12 @@ class SendPushNotifications extends Command
         $broadcasters = $match->broadcastersFlat;
 
         $title = "{$homeTeamTitle} v {$awayTeamTitle}";
-        $message = "Kick-off {$kickOffTime}";
+        /*$message = "Kickoff {$kickOffTime}";
         if (!empty($broadcasters)) {
             $message .= ", Live on {$broadcasters}";
-        }
+        }*/
+
+        $message = $this->getMessageForAlert($kickOffTime, $broadcasters);
 
         $message = PushNotification::Message($message, array(
             'badge' => 1,
@@ -268,5 +266,47 @@ class SendPushNotifications extends Command
         ));
 
         return $message;
+    }
+
+    /**
+     * Create the PushMessage object
+     *
+     * @param  string $kickOffTime
+     * @param  string $broadcasters
+     * @return string
+     */
+    abstract protected function getMessageForAlert($kickOffTime, $broadcasters);
+
+    /**
+     * The query date to use for match list
+     *
+     * @return string
+     */
+    protected function getQueryDateAsString()
+    {
+        return $this->dateNow->toDateString();
+    }
+
+    /**
+     * The query to use for match list
+     *
+     * @param  string $date
+     * @return string
+     */
+    protected function getMatchQuery()
+    {
+        $date = $this->dateNow->toDateString();
+        $matches = Match::select()
+            ->with('competition', 'homeTeam')
+            ->whereDate('kickoff', '=', $date)
+            ->take(10);
+
+        return $matches;
+    }
+
+    public function getClassName()
+    {
+        $path = explode('\\', static::class);
+        return array_pop($path);
     }
 }
