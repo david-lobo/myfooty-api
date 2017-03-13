@@ -6,6 +6,8 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use App\Console\Commands\SendDailyReminderNotifications;
+use Carbon\Carbon;
 
 class Kernel extends ConsoleKernel
 {
@@ -41,6 +43,13 @@ class Kernel extends ConsoleKernel
         /*$schedule->call(function () {
             Log::info("scheduler is running");
         })->everyFiveMinutes()->between('11:00', '22:00');;*/
+
+        /*$schedule->call(function () {
+            Log::info("scheduler is running");
+        })->everyMinute();*/
+
+
+        $this->scheduleDailyReminders($schedule);
     }
 
     /**
@@ -51,5 +60,38 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         require base_path('routes/console.php');
+    }
+
+    /**
+     * Register the Closure based commands for the application.
+     *
+     * @return void
+     */
+    protected function scheduleDailyReminders(Schedule $schedule)
+    {
+        $className = SendDailyReminderNotifications::class;
+        $taskName = snake_case($className);
+        $sendTimeHour = Config::get("schedule.tasks.$taskName.send_time_hour");
+
+        if (!is_int($sendTimeHour)) {
+            throw new \InvalidArgumentException("Config variable 'send_time_hour' must be an int", 1);
+        }
+
+        if (!($sendTimeHour >= 0 && $sendTimeHour < 24)) {
+            throw new \InvalidArgumentException("Config variable 'send_time_hour' must be an int between 0-23", 2);
+        }
+
+        $dateNow = Carbon::now();
+        $dateNow->hour = $sendTimeHour;
+        $dateNow->minute = 0;
+        $dateNow->second = 0;
+
+        $sendTime = $dateNow->format('H:i');
+
+        /*Log::info("Scheduling Daily Reminders for $sendTime", [
+            'sendTimeHour' => $sendTimeHour
+        ]);*/
+
+        $schedule->command('fixtures:send-daily-reminders')->dailyAt($sendTime);
     }
 }

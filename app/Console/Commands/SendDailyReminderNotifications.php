@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Library\MyFooty\PushNotifications\NotificationSender\DailyReminderSender;
 use Library\MyFooty\PushNotifications\MessageSender\MessageSender;
 use CustomLog as CLog;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class SendDailyReminderNotifications extends Command
@@ -49,8 +50,6 @@ class SendDailyReminderNotifications extends Command
      */
     public function handle()
     {
-
-
         $className = self::class;
         $taskName = snake_case($className);
         $cronPath = Config::get('custom-log.paths.cron');

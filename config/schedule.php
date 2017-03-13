@@ -15,7 +15,7 @@ return [
 
     'tasks' => [
         snake_case(App\Console\Commands\SendDailyReminderNotifications::class) => [
-            'send_time_hour' => 21
+            'send_time_hour' => 10
         ],
 
     ],
