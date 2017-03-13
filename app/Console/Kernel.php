@@ -48,8 +48,8 @@ class Kernel extends ConsoleKernel
             Log::info("scheduler is running");
         })->everyMinute();*/
 
-
-        $this->scheduleDailyReminders($schedule);
+        $this->scheduleKickoffReminders($schedule);
+        //$this->scheduleDailyReminders($schedule);
     }
 
     /**
@@ -63,7 +63,17 @@ class Kernel extends ConsoleKernel
     }
 
     /**
-     * Register the Closure based commands for the application.
+     * Schedule the kickoff reminders
+     *
+     * @return void
+     */
+    protected function scheduleKickoffReminders(Schedule $schedule)
+    {
+        $schedule->command('fixtures:send-kickoff-reminders')->everyMinute()->between('11:00', '22:00');
+    }
+
+    /**
+     * Schedule the daily reminders
      *
      * @return void
      */

@@ -62,19 +62,19 @@ class SendKickoffReminderNotifications extends Command
 
         $dateNow = Carbon::now();
 
-        $dateNow->day = 11;
-        $dateNow->hour = 17;
-        $dateNow->minute = 0;
+        // Set the date here only for testing
+        //$dateNow->day = 11;
+        //$dateNow->hour = 19;
+        //$dateNow->minute = 15;
 
         $notificationSender = new KickoffReminderSender(MessageSender::SEND_MODE_APNS);
         $notificationSender->setDateNow($dateNow);
-
         $notificationSender->send();
 
         //$queries = DB::getQueryLog();
         //var_dump($queries);
 
         CLog::info('SendKickoffReminderNotifications finished');
-        CLog::info('===================================');
+        //CLog::info('===================================');
     }
 }

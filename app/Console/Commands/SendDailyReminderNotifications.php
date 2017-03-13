@@ -67,9 +67,6 @@ class SendDailyReminderNotifications extends Command
             throw new \InvalidArgumentException("Config variable 'send_time_hour' must be an int between 0-23", 2);
         }
 
-        var_dump($className);
-        var_dump($sendTimeHour);
-
         $dateNow = Carbon::now();
 
         /*if ($sendTimeHour != $dateNow->hour) {
@@ -85,6 +82,7 @@ class SendDailyReminderNotifications extends Command
 
         //DB::connection()->enableQueryLog();
 
+        // Set the date here only for testing
         //$dateNow->day = 11;
         //$dateNow->hour = 10;
         //$dateNow->minute = 0;
