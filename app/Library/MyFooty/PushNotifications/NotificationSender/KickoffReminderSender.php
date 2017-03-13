@@ -44,9 +44,9 @@ class KickoffReminderSender extends MatchNotificationSender
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($sendMode)
     {
-        parent::__construct();
+        parent::__construct($sendMode);
 
         $this->minutesBefore = 30;
     }
@@ -116,7 +116,7 @@ class KickoffReminderSender extends MatchNotificationSender
      */
     protected function getMessageForAlert($kickOffTime, $broadcasters)
     {
-        $message = "Starting soon";
+        $message = "Kickoff in {$this->minutesBefore} mins";
         if (!empty($broadcasters)) {
             $message .= ", Live on {$broadcasters}";
         }

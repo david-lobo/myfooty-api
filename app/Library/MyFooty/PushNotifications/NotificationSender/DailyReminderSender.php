@@ -30,9 +30,9 @@ class DailyReminderSender extends MatchNotificationSender
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($sendMode)
     {
-        parent::__construct();
+        parent::__construct($sendMode);
     }
 
     /**
@@ -66,7 +66,7 @@ class DailyReminderSender extends MatchNotificationSender
      */
     protected function getMessageForAlert($kickOffTime, $broadcasters)
     {
-        $message = "Kickoff {$kickOffTime}";
+        $message = "Today at {$kickOffTime}";
         if (!empty($broadcasters)) {
             $message .= ", Live on {$broadcasters}";
         }

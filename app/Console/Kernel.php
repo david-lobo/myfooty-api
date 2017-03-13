@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 class Kernel extends ConsoleKernel
 {
@@ -40,8 +41,6 @@ class Kernel extends ConsoleKernel
         /*$schedule->call(function () {
             Log::info("scheduler is running");
         })->everyFiveMinutes()->between('11:00', '22:00');;*/
-
-
     }
 
     /**

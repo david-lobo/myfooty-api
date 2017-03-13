@@ -52,16 +52,17 @@ abstract class MatchNotificationSender
      *
      * @var string
      */
-    protected $sendMode = MessageSender::SEND_MODE_APNS;
+    protected $sendMode = MessageSender::SEND_MODE_DB;
 
     /**
      * Create a new DailyNotificationSender instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($sendMode)
     {
         $this->dateNow = Carbon::now();
+        $this->sendMode = $sendMode;
     }
 
     /**
@@ -83,9 +84,6 @@ abstract class MatchNotificationSender
     public function send()
     {
         CLog::info("{$this->getClassName()}");
-
-        // send to apns server or just db for debug
-        $this->sendMode = MessageSender::SEND_MODE_DB;
 
         // set the config here - can be dev or prod
         $this->pushApp = PushNotification::app('appNameIOS');

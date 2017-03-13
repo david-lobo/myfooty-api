@@ -18,7 +18,7 @@
  * Europa Leage - Comp Id = 3, CompSeasons = 70
  * https://footballapi.pulselive.com/football/fixtures?comps=3&compSeasons=70&page=1&pageSize=40&statuses=U,L&altIds=true&startDate=2016-10-05
  *
- * FA Cup - comp Id = 4, CompSeasons = 32
+ * FA Cup - comp Id = 4, CompSeasons = 71
  * https://footballapi.pulselive.com/football/fixtures?comps=4&compSeasons=32&page=0&pageSize=40&statuses=U,L&altIds=true&startDate=2016-10-05
  * https://footballapi.pulselive.com/football/broadcasting-schedule/fixtures?comps=1&fixtureIds=&pageSize=100&page=0
  *

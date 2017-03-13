@@ -32,7 +32,7 @@ class BatchMessageSender extends MessageSender
      */
     public function send(Message $message, Collection $users)
     {
-        CLog::info("BatchMessageSender",[
+        CLog::info("BatchMessageSender", [
             'users_count' => $users->count(),
             'user_ids' => $users->implode('id', ','),
             'message_title' => $message->getOption('title'),
@@ -46,13 +46,14 @@ class BatchMessageSender extends MessageSender
         if ($this->sendMode == self::SEND_MODE_APNS) {
             $pushToDevices = true;
         }
+        $sendingTo = $pushToDevices ? 'apns' : 'db';
 
         $users->each(function ($user, $key) use ($message, $devices, $logs) {
             $device = $this->createDeviceForUser($user);
 
             try {
                 $log = $this->createMatchNotificationLog($device, $message, $user);
-            } catch(\Exception $iae) {
+            } catch (\Exception $iae) {
                 $error = $iae->getMessage();
                 CLog::error("Can't create match notification log - {$error}", [
                     'user_id' => $user->id,
@@ -66,8 +67,29 @@ class BatchMessageSender extends MessageSender
             $logs->push($log);
         });
 
-        $sendingTo = $pushToDevices ? 'devices' : 'db';
-        CLog::info("Attempting send to {$sendingTo}",[
+        if ($devices->count() > 0) {
+            if ($pushToDevices) {
+                $collection = $this->pushApp->to($devices)->send($message);
+
+                // get response for each device push
+                foreach ($collection->pushManager as $push) {
+                    $response = $push->getAdapter()->getResponse();
+                    CLog::info('Apns response', [
+                        'id' => $response->getId(),
+                        'code' => $response->getCode()
+                    ]);
+                }
+            }
+
+            // Save the log after sending apns
+            $logs->each(function ($log, $key) {
+                if ($log instanceof NotificationCLog) {
+                    $log->save();
+                }
+            });
+        }
+
+        CLog::info("Batch send done - ({$sendingTo})", [
             'devices_count' => $devices->count(),
             'logs_count' => $logs->count(),
             'message_title' => $message->getOption('title'),
@@ -75,26 +97,6 @@ class BatchMessageSender extends MessageSender
             'user_ids' => $logs->implode('user_id', ','),
             'devices' => implode($devices->getTokens(), ',')
         ]);
-
-        if ($pushToDevices) {
-            $collection = $this->pushApp->to($devices)->send($message);
-
-            // get response for each device push
-            foreach ($collection->pushManager as $push) {
-                $response = $push->getAdapter()->getResponse();
-                CLog::info('Apns response', [
-                    'id' => $response->getId(),
-                    'code' => $response->getCode()
-                ]);
-            }
-        }
-
-        // Save the log after sending apns
-        $logs->each(function ($log, $key) {
-            if ($log instanceof NotificationCLog) {
-                $log->save();
-            }
-        });
 
         return null;
     }

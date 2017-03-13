@@ -83,6 +83,20 @@ class CustomLog
     }
 
     /**
+     * Log with the error command
+     *
+     * @param string $logText The text to send to error
+     * @param string $context Additional arguments to send to error
+     * @return void
+     */
+    public function error($logText, $context = [])
+    {
+        if ($this->logger) {
+            $this->logger->error($logText, $context);
+        }
+    }
+
+    /**
      * Configure CustomLog instance
      *
      * @param string $dir        Directory name

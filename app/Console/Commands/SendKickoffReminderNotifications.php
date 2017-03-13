@@ -4,7 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
-use Library\MyFooty\PushNotifications\NotificationSender\DailyReminderSender;
+use Library\MyFooty\PushNotifications\NotificationSender\KickoffReminderSender;
+use Library\MyFooty\PushNotifications\MessageSender\MessageSender;
 use CustomLog as CLog;
 use Carbon\Carbon;
 
@@ -60,11 +61,14 @@ class SendKickoffReminderNotifications extends Command
         //DB::connection()->enableQueryLog();
 
         $dateNow = Carbon::now();
-        $dateNow->hour = 19;
-        $dateNow->minute = 15;
 
-        $notificationSender = new KickoffReminderSender();
+        $dateNow->day = 11;
+        $dateNow->hour = 17;
+        $dateNow->minute = 0;
+
+        $notificationSender = new KickoffReminderSender(MessageSender::SEND_MODE_APNS);
         $notificationSender->setDateNow($dateNow);
+
         $notificationSender->send();
 
         //$queries = DB::getQueryLog();
