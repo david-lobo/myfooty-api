@@ -34,22 +34,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
-        /*$schedule->exec('cd ~/Code/myfooty-api && ls')
-            ->everyMinute()
-            ->sendOutputTo('/home/vagrant/Code/myfooty-api/listing.txt');*/
-
-        /*$schedule->call(function () {
-            Log::info("scheduler is running");
-        })->everyFiveMinutes()->between('11:00', '22:00');;*/
-
         /*$schedule->call(function () {
             Log::info("scheduler is running");
         })->everyMinute();*/
 
         $this->scheduleKickoffReminders($schedule);
-        //$this->scheduleDailyReminders($schedule);
+        $this->scheduleDailyReminders($schedule);
     }
 
     /**
