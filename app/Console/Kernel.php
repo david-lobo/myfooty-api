@@ -38,6 +38,13 @@ class Kernel extends ConsoleKernel
             Log::info("scheduler is running");
         })->everyMinute();*/
 
+        $enabled = Config::get("schedule.enabled");
+
+        if (!$enabled) {
+            Log::info("scheduler disabled");
+            return;
+        }
+
         $this->scheduleKickoffReminders($schedule);
         $this->scheduleDailyReminders($schedule);
     }
