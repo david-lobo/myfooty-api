@@ -41,7 +41,7 @@ class Kernel extends ConsoleKernel
         $enabled = Config::get("schedule.enabled");
 
         if (!$enabled) {
-            Log::info("scheduler disabled");
+            //Log::info("scheduler disabled");
             return;
         }
 
