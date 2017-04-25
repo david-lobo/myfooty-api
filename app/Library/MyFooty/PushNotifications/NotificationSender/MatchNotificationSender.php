@@ -57,12 +57,15 @@ abstract class MatchNotificationSender
     /**
      * Create a new DailyNotificationSender instance.
      *
+     * @param string $sendMode mode to send in
+     * @param string $pushApp instance of the push app
      * @return void
      */
-    public function __construct($sendMode)
+    public function __construct($sendMode, $pushApp)
     {
         $this->dateNow = Carbon::now();
         $this->sendMode = $sendMode;
+        $this->pushApp = $pushApp;
     }
 
     /**
@@ -84,9 +87,6 @@ abstract class MatchNotificationSender
     public function send()
     {
         CLog::info("{$this->getClassName()}");
-
-        // set the config here - can be dev or prod
-        $this->pushApp = PushNotification::app('appNameIOS');
 
         $this->matchUsersLists = $this->getMatchUserListsForDate($this->dateNow);
 

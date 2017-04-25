@@ -28,11 +28,13 @@ class DailyReminderSender extends MatchNotificationSender
     /**
      * Create a new DailyNotificationSender instance.
      *
+     * @param string $sendMode mode to send in
+     * @param string $pushApp instance of the push app
      * @return void
      */
-    public function __construct($sendMode)
+    public function __construct($sendMode, $pushApp)
     {
-        parent::__construct($sendMode);
+        parent::__construct($sendMode, $pushApp);
     }
 
     /**

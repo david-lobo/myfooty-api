@@ -40,13 +40,15 @@ class KickoffReminderSender extends MatchNotificationSender
     protected $dateNowWithOffset;
 
     /**
-     * Create a new DailyNotificationSender instance.
+     * Create a KickOffReminderSender instance.
      *
+     * @param string $sendMode mode to send in
+     * @param string $pushApp instance of the push app
      * @return void
      */
-    public function __construct($sendMode)
+    public function __construct($sendMode, $pushApp)
     {
-        parent::__construct($sendMode);
+        parent::__construct($sendMode, $pushApp);
 
         $this->minutesBefore = 30;
     }

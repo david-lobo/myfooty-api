@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\SetupTeamConfig',
         'App\Console\Commands\SendDailyReminderNotifications',
         'App\Console\Commands\SendKickoffReminderNotifications',
+        'App\Console\Commands\SendTestPushNotification',
     ];
 
     /**

@@ -126,7 +126,7 @@ class MessageSender
         $log->body = $body;
         $log->user_id = $userId;
         $log->production = $production;
-        //$log->save();
+        $log->save();
         return $log;
     }
 
