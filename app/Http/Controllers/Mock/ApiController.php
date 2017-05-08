@@ -25,7 +25,7 @@ class ApiController extends Controller
 	    	$filename = "page${page}.json";
 
 	    	$filePath = $mockDir . 'pages' .DIRECTORY_SEPARATOR . $competitionId . DIRECTORY_SEPARATOR . $filename;
-	    	
+
 	    	//var_dump($settings);
 	    	//var_dump($filePath);
 
@@ -49,7 +49,7 @@ class ApiController extends Controller
 	    	}
     	}
 
-    	abort(400, 'Missing parameters');
+    	abort(400, 'Missing parameters in request');
     }
 
     /**
@@ -89,7 +89,7 @@ class ApiController extends Controller
 	    					"name" => "UK - Sky Sports",
 	    					"abbreviation" => "SKY",
 	    					"url" => "http://www.skysports.com/"
-	    				], 
+	    				],
 	    				[
 	    					"name" => "UK - BT Sport",
 	    					"abbreviation" => "BT",
@@ -109,6 +109,6 @@ class ApiController extends Controller
 	    	}
     	}
 
-    	abort(400, 'Missing parameters');
+    	abort(400, 'Missing parameters in request');
     }
 }
