@@ -47,7 +47,7 @@ class DataController extends Controller
 
         }
 
-        $matches = Match::where('id', '>', '1')
+        $matches = Match::where('id', '>', '0')
             ->with('homeTeam', 'awayTeam', 'broadcasters', 'competition')
             //->orWhere('away_id', '=', $team->id)
             ->orderBy('kickoff', 'asc')

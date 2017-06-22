@@ -14,9 +14,9 @@ $domain = str_replace("http://", "", $url);
 $competitions = [
     [
         "id" => 1,
-        "compSeasons" => 54
+        "compSeasons" => 79
     ],
-    [
+    /*[
         "id" => 2,
         "compSeasons" => 66
     ],
@@ -31,7 +31,7 @@ $competitions = [
     [
         "id" => 5,
         "compSeasons" => 56
-    ]
+    ]*/
 ];
 
 return [

@@ -47,6 +47,8 @@ var waitingIntervals = [31200, 4060, 5420, 6180, 7900, 870, 9300, 10300, 32450, 
 
 //Not sure why - maybe cached on Wednesday's??
 var startDateForFixtures = '2016-10-05';
+startDateForFixtures = '';
+
 var path = './config/settings.json';
 
 var settings = fs.read(path);
@@ -103,8 +105,12 @@ function buildFixturesURL(competitionId, currentPage) {
 http://local.test.com/footballapi-pulselive/fixtures.php?comps=2&compSeasons=66&page=1&pageSize=40&statuses=U%2CL&altIds=true&startDate=2016-10-05
     var comp = window.competitionsDict[competitionId];
 
-    var params = '?comps=' + competitionId + '&compSeasons=' + comp.compSeasons + '&page=' + currentPage + '&pageSize=40&statuses=U,L&altIds=true&startDate=' + startDate; 
-	var wsurl = fixturesURL + params;
+    var params = '?comps=' + competitionId + '&compSeasons=' + comp.compSeasons + '&page=' + currentPage + '&pageSize=40&statuses=U,L&altIds=true'; 
+	
+    if (startDate != null && startDate.length > 0) {
+        params += '&startDate=' + startDate;
+    }
+    var wsurl = fixturesURL + params;
 	
 	console.log(wsurl);
 	return wsurl
